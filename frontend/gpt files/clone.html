@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="clone.css">
+    <title>ChatGPT</title>
+</head>
+<body>
+    <div class="main">
+
+        <!--side bar-->
+        <div class="sidebar">
+            <div class="top-logos">
+                <div class="left-logos">
+                    <img src="Imgs/Chat_GPT.png" width="23px" height="23px"  alt="Chat-GPT Logo">
+                </div>
+                <div class="right-logos">
+                    <img src="Imgs/search-bar.png" alt="Search bar" width="20px" height="20px">
+                    <img src="Imgs/naivgation-bar.png" alt="Navigation bar" width="20px" height="20px">
+                </div>
+            </div>
+
+            <div class="sidebar-scrollable-content">
+                <div class="chats-imgs-librarys">
+                    <div class="new-chat">
+                    <img src="Imgs/add-chat.png" alt="new chat"width="23px" height="23px"> <p>New Chat</p> 
+                    </div>
+                    <div>
+                        <img src="Imgs/images.png" alt="images"width="23px" height="23px"> <p>Images</p>
+                    </div>
+                    <div>
+                        <img src="Imgs/books.png" alt="books"width="23px" height="23px"> <p>Library</p>
+                    </div>
+                    <div>
+                        <img src="Imgs/folder.png" alt="folder"width="23px" height="23px"> <p>Projects</p>
+                    </div>
+                    <div>
+                        <img src="Imgs/codex.png" alt="codex"width="23px" height="23px"> <p>Codex</p>
+                    </div>
+                    <div>
+                        <img src="Imgs/more-icon.png" alt="more"width="23px" height="23px"> <p>More</p>
+                    </div> 
+                </div>
+
+
+                <div class="chat-historys">
+                    <h2>Recents</h2>
+                    <div id="sidebar-titels"></div>
+                </div>
+
+                <div class="userAccount">
+                    <div class="pfp-name-container">
+                         <div class="pfp-name">
+                            <p class="pfp">OU</p>
+                            <div class="two-txt">
+                                <p class="userName">Obito Uchiha</p>
+                                <p class="status">Free</p>
+                            </div>
+                            
+                        </div>
+                    </div>
+                       
+                    <div class="claimOffer">
+                       
+                        <button> 
+                            <img src="Imgs/gift -icon.png" alt="gift box" width="16px" height="16px">
+                            <p>Claim Offer</p>
+                        </button>
+                    </div>
+                </div>
+                
+            </div>
+            
+        </div>
+
+        <!--chat section-->
+        <div class="chat-section">
+            <!--The header-->
+            <header>
+                <div class="left-header">
+                    <p>ChatGPT</p>
+                    <img src="Imgs/sort-down-icon.png" alt="Sort down arrow icon" width="13px" height="13px">
+                </div>
+                <div class="middle-header">
+                    <button class="btn-1">
+                        <img src="Imgs/gift-box-blue-icon.png" alt="Gif box icon" width="19px" height="19px">
+                        <p>Free offer</p>
+                    </button>
+                    <button class="btn-2">Chat</button>
+                    <button class="btn-3">
+                        <img src="Imgs/lock-icon.png" alt="lock icon" width="12px" height="12px">
+                       <p>Work</p> 
+                    </button>
+                </div>
+                <div class="right-header">
+                    <img src="Imgs/chat-icon.png" alt="Chat icon" width="23px" height="23px">
+                </div>
+            </header>
+
+            <!--caht-input-->
+            <div class="AI-user-input">
+                <div class="AI-input">
+                    <h2>Hey there, What's on your mind</h2>
+                </div>
+
+
+                <div class="user-input">
+                    <div class="span-class">
+                         <div class="div-2">
+                            <div class="plus-input">
+                                <img class="img-1" src="Imgs/plus-icon.png" alt="Puls icon" width="20px" height="20px">
+                                 <input type="text" placeholder="Ask anything...">
+                            </div>
+                                 
+                            <div class="mic-sound">
+                                 <img class="img-2" src="Imgs/microphone-icon.png" alt="Microphone icon" width="20px" height="20px">
+                                 <img class="img-3" src="Imgs/upwar-black-icon.png" alt="Sound wave icon" width="23px" height="23px">
+                            </div>
+                        </div>
+                    </div>
+                   
+                   
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="chatGPT.js"></script>
+</body>
+</html>
