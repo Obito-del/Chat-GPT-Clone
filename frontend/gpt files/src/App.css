@@ -25,16 +25,44 @@ body {
     overflow: hidden;
 }
 
+
 .sidebar {
     border: 1px solid rgb(39, 38, 38);
     width: 316px;
     min-width: 316px;
     height: 100vh;
     display: flex;
+   
     flex-direction: column;
     overflow: hidden;
     position: relative;
+    transition: 4s;
 }
+
+/* .open-btn {
+    display: none;
+} */
+
+@media (max-width: 768px) {
+    .sidebar {
+        display: none;
+    }
+    /*
+    .open-btn {
+        display: block;
+    }
+
+    .sidebar.is-active {
+        display: block;
+    } */
+}
+
+
+
+
+
+
+
 
 .top-logos {
     height: 25px;
@@ -298,6 +326,13 @@ body {
     padding: 0;
 }
 
+@media (max-width: 1080px) {
+    
+    .chat-section {
+    width: 100%;
+    }
+}
+
 .chat-section header {
     position: sticky;
     top: 0;
@@ -422,6 +457,10 @@ header .left-header {
 
 /*input*/
 
+.plus-input input:focus {
+   outline: none;
+}
+
 .AI-user-input {
     height: 85vh;
     display: flex;
@@ -514,6 +553,12 @@ input {
     width: 100%;
 }
 
+
+.user-input input[type="text"]{
+    color: rgb(253, 255, 225);
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}
+
 .user-input input::placeholder {
     color: rgb(133, 132, 132);
     padding: 0;
@@ -528,17 +573,33 @@ input {
 
 .mic-sound .img-3 {
     background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 .mic-sound .img-3 {
     padding: 10px;
     border-radius: 30px;
     height: 20px;
     width: 20px;
+    transition: .5s;
 }
 
 .mic-sound .img-3:hover {
     cursor: pointer;
+    box-shadow: 0 1px 7px rgb(202, 196, 196);
 }
+
+
+.img-3 .sendBtn{
+    transition: .2s
+}
+.img-3 .sendBtn:hover {
+    scale: .8;
+} 
+.img-3 .sendBtn:active {
+    scale: 1.1;
+} 
 
 .img-3 img {
     width: 30px;
@@ -618,26 +679,29 @@ input {
     background: rgb(34, 34, 34);
     border-radius: 8px;
     padding: 4px;
-    z-index: 11;
+    z-index: 99;
 }
 
 .chat-dropdown-menu div {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 18px;
     color: white;
     font-size: 13px;
     padding: 8px 10px;
     border-radius: 6px;
     cursor: pointer;
     white-space: nowrap;
-    border: 1px solid blue;
+    border: 1px solid rgb(51, 51, 52);
+    transition: .2s;
 }
 
 
 
 .chat-dropdown-menu div:hover {
-    background: rgb(65, 65, 65);
+    background: rgba(147, 145, 145, 0.619);
+    font-weight: 600; 
+    scale: 1.07;
 }
 
 .rename-input {

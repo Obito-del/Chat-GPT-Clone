@@ -7,6 +7,7 @@
 import { useEffect, useState } from 'react';
 import SideBar from './components/Sidebar'
 import ChatSection from './components/ChatSection'
+
 import './App.css'
 //import { chatHistory, myDetailedConvo } from './data/ChatHistory';
 

@@ -1,8 +1,12 @@
-import { DotsThreeIcon, PencilSimpleIcon,  TrashIcon } from "@phosphor-icons/react"
+import { DotsThreeIcon, PencilSimpleIcon,  TrashIcon, PushPinSlashIcon, PushPin} from "@phosphor-icons/react"
 import { useState } from "react"
 
 
 function ChatHistoryItems ({setActiveChat, chatData, setChatData}) {
+
+    const pinnedChats = chatData.filter((chat) => chat.pinned_time)
+    const recentChats = chatData.filter((chat) => !chat.pinned_time)
+    
     
     const [menuOpenId, setMenuOpenId] = useState(null)
     const [renameingId, setRenamingId] = useState(null)
@@ -31,9 +35,22 @@ function ChatHistoryItems ({setActiveChat, chatData, setChatData}) {
         setRenamingId(null)
     }
 
+    //this is the pin function
+    const handlePin = (id) => {
+       setChatData(chatData.map((chat) =>
+            chat.id === id? { ...chat, pinned_time: chat.pinned_time ? null : new Date() } : chat
+     ))
+
+     setMenuOpenId(null)
+    }
+
+    console.log("Pinned Chats:", pinnedChats)
+
     return (
         <div className="chat-histories">
             <h2>Recent</h2>
+
+            
 
             <div id="sidbar-titles">
                 {chatData.map((chat) => (
@@ -66,6 +83,11 @@ function ChatHistoryItems ({setActiveChat, chatData, setChatData}) {
                         )}
                         {menuOpenId === chat.id && (
                             <div className="chat-dropdown-menu">
+                                <div onClick={() => handlePin(chat.id)}>
+                                    {chat.pinned_time ? <PushPinSlashIcon size={14}/> 
+                                    : <PushPin size={14}/> }
+                                    <p>{chat.pinned_time ? "Unpin" : "Pin"}</p>
+                                </div>
                                 <div onClick={()=>startRename(chat)}>
                                     <PencilSimpleIcon size={14}/> <p>Rename</p>
                                 </div>

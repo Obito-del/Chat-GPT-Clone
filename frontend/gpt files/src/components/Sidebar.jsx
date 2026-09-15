@@ -1,51 +1,53 @@
 import ChatHistoryItems from "./ChatHistoryItems"
 import {OpenAI} from "./ChatGPTIcon";
 import { 
-  MagnifyingGlass, 
-  SidebarSimple, 
-  Plus, 
-  Image, 
-  Books, 
-  Folder, 
-  Code, 
-  DotsThree, 
-  Gift 
+  MagnifyingGlassIcon, 
+  SidebarSimpleIcon, 
+  PlusIcon, 
+  ImageIcon, 
+  BooksIcon, 
+  FolderIcon, 
+  CodeIcon, 
+  DotsThreeIcon, 
+  GiftIcon 
 } from "@phosphor-icons/react"
 
 function SideBar({ setChatData,setActiveChat, chatData }) {
     
+    
     return (
         <div>
-                <div className="sidebar">
+            {/* <button class="open-btn">X</button> */}
+            <div className="sidebar">
             <div className="top-logos">
                 <div className="left-logos">
                     <OpenAI size={23} color="#ffffff" />
                 </div>
                 <div className="right-logos">
-                    <MagnifyingGlass size={20} color="white"/>
-                    <SidebarSimple size={20} color="white"/>
+                    <MagnifyingGlassIcon size={20} color="white"/>
+                    <SidebarSimpleIcon size={20} color="white"/>
                 </div>
             </div>
 
             <div className="sidebar-scrollable-content">
                 <div className="chats-imgs-librarys">
                     <div className="new-chat" onClick={() => setActiveChat(null)}>
-                            <Plus size={20}/> <p>New Chat</p> 
+                            <PlusIcon size={20}/> <p>New Chat</p> 
                     </div>
                     <div>
-                        <Image size={20}/> <p>Images</p>
+                        <ImageIcon size={20}/> <p>Images</p>
                     </div>
                     <div>
-                        <Books size={20}/> <p>Library</p>
+                        <BooksIcon size={20}/> <p>Library</p>
                     </div>
                     <div>
-                        <Folder size={20}/> <p>Projects</p>
+                        <FolderIcon size={20}/> <p>Projects</p>
                     </div>
                     <div>
-                        <Code size={20}/> <p>Codex</p>
+                        <CodeIcon size={20}/> <p>Codex</p>
                     </div>
                     <div>
-                        <DotsThree size={20}/> <p>More</p>
+                        <DotsThreeIcon size={20}/> <p>More</p>
                     </div> 
                 </div>
 
@@ -67,7 +69,7 @@ function SideBar({ setChatData,setActiveChat, chatData }) {
                     <div className="claimOffer">
                        
                         <button> 
-                           <Gift size={16}/>
+                           <GiftIcon size={16}/>
                             <p>Claim Offer</p>
                         </button>
                     </div>
