@@ -29,6 +29,8 @@ function App() {
     handleData();
   }, []);
 
+    
+
 
    const handleChatSelect = (id) => {
     
@@ -48,6 +50,28 @@ const handleSend = async () => {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ messages: message })
   });
+  
+  
+  const response2 = await fetch(`${API_URL}/chat`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      chat: message,
+      model: "llama3.2:3b",
+      message: [
+        {
+          role: "user",
+          content: message
+        }
+      ]
+    }),
+
+  })
+    
+
+  console.log(response2)
   handleData(); 
   const data = await response.json();
   console.log(data);

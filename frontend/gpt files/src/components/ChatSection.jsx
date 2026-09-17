@@ -5,7 +5,7 @@ import {
     NotePencil,
     Plus,
     Microphone,
-    ArrowUp
+    ArrowUpIcon
 } from "@phosphor-icons/react"
 
 
@@ -86,7 +86,7 @@ function ChatSection ({ handleSend, activeChat, messages, setMessage, chatData, 
                     <div className="mic-sound">
                         <Microphone size={20} className="img-2" color="white" />
                         <div className="img-3" onClick={handleSend} onKeyDown={(e) => e.key === 'Enter' && handleSend()}>
-                        <ArrowUp size={16} weight="bold"/>
+                        <ArrowUpIcon size={18} weight="bold"/>
                         </div>
                     </div>
                     </div>

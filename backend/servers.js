@@ -21,20 +21,29 @@ app.get('/conversations', (req, res) => {
 
 app.post('/conversations', (req, res) => {
 
-    console.log(req.body)
+    // console.log(req.body)
     const newPost = { 
         id : Date.now().toString(),
         title: req.body.messages,
         text: req.body.messages
     }
     chatHistory.items.unshift(newPost)
-    console.log(chatHistory.items)
+    // console.log(chatHistory.items)
     res.json(newPost)
+
 // const localChat = chatData.find((chat) => chat.id === id && chat.text);
 //     if(localChat) {
 //       setActiveChat(localChat)
 //       return;
 //     }
+})
+
+app.post('/chat', (req, res) => {
+ const chats = req.body;
+    console.log("new API", chats)
+    
+ res.json();
+
 })
 
 app.get('/conversations/:id', (req, res) => {

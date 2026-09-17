@@ -528,22 +528,30 @@ input {
 
 .mic-sound .img-3 {
     background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 .mic-sound .img-3 {
     padding: 10px;
     border-radius: 30px;
     height: 20px;
     width: 20px;
+    transition: .2s;
 }
 
 .mic-sound .img-3:hover {
     cursor: pointer;
+    scale: 1.05;
+    box-shadow: 0 0 3px rgba(228, 231, 233, 0.803);
 }
 
 .img-3 img {
     width: 30px;
-    height: 30px;
+    height: 3px;
 }
+
+
 
 .plus-input .img-1 {
     transition: all .3s ease;
@@ -553,6 +561,10 @@ input {
 .plus-input .img-1:hover {
     background: rgb(49, 49, 49);
     cursor: pointer;
+}
+
+.plus-input input:focus {
+    color: white;
 }
 
 .mic-sound .img-2 {
