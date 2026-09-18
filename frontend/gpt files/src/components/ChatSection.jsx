@@ -1,11 +1,11 @@
 import { 
-    CaretDown,
-    Gift,
-    LockKey,
-    NotePencil,
-    Plus,
-    Microphone,
-    ArrowUp
+    CaretDownIcon,
+    GiftIcon,
+    LockKeyIcon,
+    NotePencilIcon,
+    PlusIcon,
+    MicrophoneIcon,
+    ArrowUpIcon
 } from "@phosphor-icons/react"
 
 
@@ -102,7 +102,7 @@ function ChatSection ({ handleSend, activeChat, messages, setMessage, chatData, 
                     <div className="mic-sound">
                         <MicrophoneIcon size={20} className="img-2" color="white" />
                         <div className="img-3" onClick={handleSend} onKeyDown={(e) => e.key === 'Enter' && handleSend()}>
-                        <ArrowUp size={16} weight="bold"/>
+                        <ArrowUpIcon size={16} weight="bold"/>
                         </div>
                     </div>
                     </div>
