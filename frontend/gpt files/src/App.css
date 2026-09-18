@@ -564,7 +564,9 @@ input {
 }
 
 .plus-input input:focus {
-    color: white;
+  outline: none;
+  color: white;
+  font-size: 16px;
 }
 
 .mic-sound .img-2 {
