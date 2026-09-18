@@ -38,7 +38,7 @@ function ChatHistoryItems ({setActiveChat, chatData, setChatData}) {
     //this is the pin function
     const handlePin = (id) => {
        setChatData(chatData.map((chat) =>
-            chat.id === id? { ...chat, pinned_time: chat.pinned_time ? null : new Date() } : chat
+            chat.id === id? { ...chat, pinned_time: chat.pinned_time ? null : new Date().toISOString() } : chat
      ))
 
      setMenuOpenId(null)
