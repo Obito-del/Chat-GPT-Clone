@@ -46,44 +46,79 @@ function App() {
 
 
 const handleSend = async () => {
-  const response = await fetch(`${API_URL}/conversations`, {
+    const userMessage = message.trim();
+
+    const response = await fetch(`${API_URL}/conversations`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ messages: message })
+    body: JSON.stringify({ messages: userMessage })
   });
-  
-  
+  const data = await response.json();
+
   const response2 = await fetch(`${API_URL}/chat`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      chat: message,
       model: "llama3.2:3b",
-      message: [
-        {
-          role: "user",
-          content: message
-        }
-      ]
+      message: [{role: "user", content: userMessage}]
     }),
+ 
+ 
+  // const response = await fetch(`${API_URL}/conversations`, {
+  //   method: 'POST',
+  //   headers: { 'Content-Type': 'application/json' },
+  //   body: JSON.stringify({ messages: message })
+  });
 
-  })
+  const aiData = await response2.json();
+  console.log(aiData);
+
+  setActiveChat({
+    id: data.id, 
+    title: userMessage, 
+    messages: [
+      {id: data.id + '-user', sender: 'user', text: userMessage},
+      {id: data.id + '-assistant', sender: 'assistant', text: aiData.content}
+
+    ]
+  });
+
+  handleData();
+  setMessage("");
+  
+};
+  
+//   const response2 = await fetch(`${API_URL}/chat`, {
+//     method: "POST",
+//     headers: {
+//       "Content-Type": "application/json",
+//     },
+//     body: JSON.stringify({
+//       chat: message,
+//       model: "llama3.2:3b",
+//       message: [
+//         {
+//           role: "user",
+//           content: message
+//         }
+//       ]
+//     }),
+
+//   })
     
 
-  console.log(response2)
+//   console.log(response2)
 
 
 
-  const data = await response.json();
-  console.log(data);
-  setActiveChat({id: data.id, title: message, text:message});
-  handleData();  // Refresh the chat list after sending a message
+//   const data = await response.json();
+//   console.log(data);
+//   setActiveChat({id: data.id, title: message, text:message});
+//   handleData();  // Refresh the chat list after sending a message
 
   
-  setMessage("");  // ← clear the input
-};
+//   setMessage("");  // ← clear the input
+// };
 
 
   return (

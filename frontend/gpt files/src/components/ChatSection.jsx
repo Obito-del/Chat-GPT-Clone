@@ -28,7 +28,11 @@ function ChatSection ({ handleSend, activeChat, messages, setMessage, chatData, 
     //console.log("Active Chat Data:", activeChat);
     const message = []
 
-    if (activeChat && activeChat.mapping) {
+        
+
+    if (activeChat && activeChat.messages) {
+        message.push(...activeChat.messages);
+    } else if (activeChat && activeChat.mapping) {
         //it cahnges the dictionary (UUID node IDs) to standard JavaScript array to looop through them
         Object.values(activeChat.mapping).forEach((item) => {
             //loop through every single node conversations 

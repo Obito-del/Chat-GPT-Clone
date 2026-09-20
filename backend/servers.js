@@ -1,6 +1,8 @@
 //import ChatHistoryItems from "../src/components/ChatHistoryItems.jsx";
+
 const express = require('express');
 const cors = require('cors');
+const http = require('http');   // ← this line was missing
 const { chatHistory, myDetailedConvo } = require('./data/ChatHistory.js');
 //import { chatHistory, myDetailedConvo } from './data/ChatHistory.js'
 
@@ -38,13 +40,69 @@ app.post('/conversations', (req, res) => {
 //     }
 })
 
-app.post('/chat', (req, res) => {
- const chats = req.body;
-    console.log("new API", chats)
-    
- res.json();
+app.post('/chat', async (req, res) => {
+    const {model, message} = req.body;
 
-})
+    const ollamaReq = http.request(
+        {
+            hostname: 'localhost',
+            port: 11434,
+            path: '/api/chat',
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        },
+            (ollamaRes) => {
+                let body = '';
+                ollamaRes.on('data', (chunk) => (body += chunk));
+                ollamaRes.on('end', () => {
+                    const data = JSON.parse(body);
+                    res.json(data.message);
+                });
+            }
+        
+    );
+
+    ollamaReq.on('error', (err) => {
+        console.error('Error fetching Ollama response:', err);
+        res.status(500).json({ error: 'Failed to fetch Ollama response' });
+    });
+
+    ollamaReq.write(JSON.stringify({ model, messages: message, stream: false }));
+    ollamaReq.end();
+});
+
+    // try {
+    //     const ollamaRes = await fetch(`https://localhost:11434/api/chat`, {
+    //         method: "POST",
+    //         headers: {
+    //             "Content-Type": "application/json",
+    //         },
+    //         body: JSON.stringify({ 
+    //             model: model,
+    //             messages: message,
+    //             // makes it wait and send back one complete JSON object instead
+    //             steam: false   
+    //         })
+    //     });
+
+    //     const data = await ollamaRes.json();
+    //     res.json(data.message);
+
+
+    // } catch (error) {
+    //     console.error('Error fetching Ollama response:', error);
+    //     res.status(500).json({ error: 'Failed to fetch Ollama response' });
+    // }
+
+
+//  const chats = req.body;
+//     console.log("new API", chats)
+    
+//  res.json();
+
+
 
 app.get('/conversations/:id', (req, res) => {
     const { id } = req.params;
