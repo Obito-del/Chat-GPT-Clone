@@ -680,9 +680,14 @@ input {
 /* .AI-user-input {
     border: 1px solid red;
 } */
+.AI-user-input {
+    padding: 10px;
+}
 
 .AI-user-input strong {
-    border: 1px solid yellow;
+    padding: 5px;
+    border: 1px solid rgba(255, 255, 255, 0.499);
+    border-radius: 3px;
 }
 
 /* .AI-user-input strong ms.sender{
@@ -691,7 +696,9 @@ input {
 
 .message-item p {
     color: white;
-    border: 1px solid rgb(114, 114, 147);
+    border-radius: 3px;
+    padding: 5px;
+    border: 1px solid rgb(61, 61, 66);
 }
 
 

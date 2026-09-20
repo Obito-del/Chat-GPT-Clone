@@ -73,9 +73,15 @@ const handleSend = async () => {
     
 
   console.log(response2)
-  handleData(); 
+
+
+
   const data = await response.json();
   console.log(data);
+  setActiveChat({id: data.id, title: message, text:message});
+  handleData();  // Refresh the chat list after sending a message
+
+  
   setMessage("");  // ← clear the input
 };
 

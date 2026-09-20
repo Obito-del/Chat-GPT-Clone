@@ -17,7 +17,7 @@ function ChatHistoryItems ({setActiveChat, chatData, setChatData}) {
         setMenuOpenId(null)
     }
 
-    // in the input the current name will be there
+    // in the input the current name will be here
     const startRename = (chat) => {
         setRenamingId(chat.id)
         setRenameValue(chat.title)
@@ -25,7 +25,7 @@ function ChatHistoryItems ({setActiveChat, chatData, setChatData}) {
     }
 
 
-    //changes only the title, like the id will be untouched
+    //changes only the title, like the id and others will be untouched
     const confermRename = (id) => {
         if (renameValue.trim()) {
             setChatData(chatData.map((chat) =>
