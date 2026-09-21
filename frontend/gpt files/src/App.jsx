@@ -46,42 +46,87 @@ function App() {
 
 
 const handleSend = async () => {
-    const userMessage = message.trim();
+  const userMessage = message.trim();
+  if(!userMessage) return;
 
+  let chatId = activeChat?.id;
+  let chatTitle = activeChat?.title;
+
+  if(!activeChat) {
     const response = await fetch(`${API_URL}/conversations`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ messages: userMessage })
-  });
-  const data = await response.json();
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({messages: userMessage})
+    });
 
-  const response2 = await fetch(`${API_URL}/chat`, {
+    const data = await response.json();
+    chatId = data.id;
+    chatTitle =  userMessage;
+  }
+
+ const response2 = await fetch(`${API_URL}/chat`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       model: "llama3.2:3b",
-      message: [{role: "user", content: userMessage}]
+      message: [{ role: "user", content: userMessage }]
     }),
+  });
+
+  const aiData = await response2.json();
+  
+  setActiveChat((prev) => ({
+    id: chatId,
+    title: chatTitle,
+    messages: [
+      ...(prev?.messages || []),
+      {id: chatId + '-u-' + Date.now(), sender: 'user', text: userMessage},
+      {id: chatId + '-a-' + Date.now(), sender: 'assistant', text: aiData.content}
+    ]
+  }));
+
+  if(!activeChat) handleData();
+  setMessage("");
+
+  
+  //   const userMessage = message.trim();
+
+  //   const response = await fetch(`${API_URL}/conversations`, {
+  //   method: 'POST',
+  //   headers: { 'Content-Type': 'application/json' },
+  //   body: JSON.stringify({ messages: userMessage })
+  // });
+  // const data = await response.json();
+
+  // const response2 = await fetch(`${API_URL}/chat`, {
+  //   method: "POST",
+  //   headers: { "Content-Type": "application/json" },
+  //   body: JSON.stringify({
+  //     model: "llama3.2:3b",
+  //     message: [{role: "user", content: userMessage}]
+  //   }),
  
  
   // const response = await fetch(`${API_URL}/conversations`, {
   //   method: 'POST',
   //   headers: { 'Content-Type': 'application/json' },
   //   body: JSON.stringify({ messages: message })
-  });
 
-  const aiData = await response2.json();
-  console.log(aiData);
 
-  setActiveChat({
-    id: data.id, 
-    title: userMessage, 
-    messages: [
-      {id: data.id + '-user', sender: 'user', text: userMessage},
-      {id: data.id + '-assistant', sender: 'assistant', text: aiData.content}
+  // });
 
-    ]
-  });
+  // const aiData = await response2.json();
+  // console.log(aiData);
+
+  // setActiveChat({
+  //   id: data.id, 
+  //   title: userMessage, 
+  //   messages: [
+  //     {id: data.id + '-user', sender: 'user', text: userMessage},
+  //     {id: data.id + '-assistant', sender: 'assistant', text: aiData.content}
+
+  //   ]
+
 
   handleData();
   setMessage("");
