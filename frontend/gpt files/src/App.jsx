@@ -15,6 +15,8 @@ const API_URL = 'http://localhost:3000';
 
 
 function App() {
+
+  const [isLoading, setIsLoading] = useState(false);
   //const [count, setCount] = useState(0)
   const [chatData, setChatData] = useState([])
   const [message, setMessage] = useState("")
@@ -45,9 +47,11 @@ function App() {
   }
 
 
+  
 const handleSend = async () => {
   const userMessage = message.trim();
-  if(!userMessage) return;
+  // if the user typed an empty string the if statment run which make it the code below not to run
+  if(!userMessage) return; 
 
   let chatId = activeChat?.id;
   let chatTitle = activeChat?.title;
@@ -64,6 +68,7 @@ const handleSend = async () => {
     chatTitle =  userMessage;
   }
 
+setIsLoading(true);
  const response2 = await fetch(`${API_URL}/chat`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -75,10 +80,12 @@ const handleSend = async () => {
 
   const aiData = await response2.json();
   
+  setIsLoading(false)
   setActiveChat((prev) => ({
     id: chatId,
     title: chatTitle,
     messages: [
+      // by default prev is undefined but since there is ? preve become an empty string
       ...(prev?.messages || []),
       {id: chatId + '-u-' + Date.now(), sender: 'user', text: userMessage},
       {id: chatId + '-a-' + Date.now(), sender: 'assistant', text: aiData.content}
@@ -170,7 +177,7 @@ const handleSend = async () => {
   <div className='app-container'>
 
     <SideBar setActiveChat = {handleChatSelect} chatData={chatData} setChatData={setChatData}/>
-    <ChatSection handleSend={handleSend} activeChat = {activeChat} messages={message} setMessage={setMessage} chatData={chatData} setChatData={setChatData}/>
+    <ChatSection handleSend={handleSend} activeChat={activeChat} messages={message} setMessage={setMessage} chatData={chatData} setChatData={setChatData} isLoading={isLoading} />
   </div>
   )
 }

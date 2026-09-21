@@ -702,3 +702,91 @@ input {
 }
 
 
+/* //chat display indicator */
+
+
+.chat-conversation-body {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 70%;
+    margin: 0 auto;
+    overflow-y: auto;
+    padding: 20px 0;
+    /* border: 1px solid rgb(72, 0, 255); */
+    align-items: center;
+    justify-content: center;
+
+}
+
+.message-item {
+    display: flex;
+    flex-direction: column;
+    max-width: 70%;
+    /* border: 1px solid red; */
+
+}
+
+.message-item.user {
+    align-self: flex-end;
+    align-items: flex-end;
+}
+
+.message-item.assistant {
+    align-self: flex-start;
+    align-items: flex-start;
+}
+
+.message-item p {
+    color: white;
+    border-radius: 18px;
+    padding: 10px 16px;
+    border: none;
+    margin: 4px 0 0 0;
+}
+
+.message-item.user p {
+    background: #2f2f2f;
+}
+
+.message-item.assistant p {
+    background: #1b1b1b;
+}
+
+.message-item strong {
+    font-size: 12px;
+    color: rgb(153, 153, 153);
+    font-weight: 600;
+}
+
+/* thinking indicator */
+
+.typing-indicator {
+    display: flex;
+    align-self: flex-start;
+    gap: 4px;
+    padding: 10px 16px;
+}
+
+.typing-indicator span {
+    width: 8px;
+    height: 8px;
+    background: rgb(153, 153, 153);
+    border-radius: 50%;
+    animation: bounce 1.4s infinite ease-in-out both;
+}
+
+.typing-indicator span:nth-child(2) {
+    animation-delay: .15s;
+}
+
+.typing-indicator span:nth-child(3) {
+    animation-delay: .3s;
+}
+
+@keyframes bounce {
+    0%, 60%, 100% {transform: translateY(0); opacity: .4;}
+    30% { transform: translateY(-6px); opacity: 1;}
+}
+
+

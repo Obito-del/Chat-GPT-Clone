@@ -9,7 +9,7 @@ import {
 } from "@phosphor-icons/react"
 
 
-function ChatSection ({ handleSend, activeChat, messages, setMessage, chatData, setChatData }) {
+function ChatSection ({ handleSend, activeChat, messages, setMessage, chatData, setChatData, isLoading }) {
     // const inputField = document.getElementById("myInput");
     // const actionButton = document.getElementById("myButton");
 
@@ -87,6 +87,13 @@ function ChatSection ({ handleSend, activeChat, messages, setMessage, chatData, 
                                 <p>{msg.text}</p>
                             </div>
                         ))}
+                        {isLoading && (
+                            <div className="typing-indicator">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                        )}
                     </div>
                 ) : (
                     <div className="AI-input">
