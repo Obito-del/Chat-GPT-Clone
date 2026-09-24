@@ -723,6 +723,7 @@ input {
     display: flex;
     flex-direction: column;
     max-width: 70%;
+    gap: 2px;
     /* border: 1px solid red; */
 
 }
@@ -730,6 +731,7 @@ input {
 .message-item.user {
     align-self: flex-end;
     align-items: flex-end;
+    margin-right: 10px;
 }
 
 .message-item.assistant {
@@ -747,10 +749,13 @@ input {
 
 .message-item.user p {
     background: #2f2f2f;
+    border-bottom-right-radius: 1px;
+    margin-right: 10px;
 }
 
 .message-item.assistant p {
     background: #1b1b1b;
+    border-bottom-left-radius: 1px;
 }
 
 .message-item strong {
@@ -766,6 +771,10 @@ input {
     align-self: flex-start;
     gap: 4px;
     padding: 10px 16px;
+    background: #1c1c1c;
+    padding: 16px 10px;
+    border-radius: 12px;
+    border-bottom-left-radius: 2px;
 }
 
 .typing-indicator span {

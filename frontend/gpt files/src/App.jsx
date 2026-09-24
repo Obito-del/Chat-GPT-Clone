@@ -23,7 +23,7 @@ function App() {
   const [activeChat, setActiveChat] = useState(null);
 
   const handleData = () => {
-    fetch(`${API_URL}/conversations`).then((res) => res.json())
+    fetch(`${API_URL}/conversation`).then((res) => res.json())
     .then((data) => setChatData(data))
     .catch((err) => console.error('Failed to fetch conversations:', err));
   }
@@ -39,7 +39,7 @@ function App() {
     
     //locally-typed chats live only in chatData, no in the backend
     console.log('Selected chat ID:', message);
-
+// changed 
     fetch(`${API_URL}/conversations/${id}`)
     .then((res) => res.json())
     .then((data) => setActiveChat(data))
@@ -56,44 +56,54 @@ const handleSend = async () => {
   let chatId = activeChat?.id;
   let chatTitle = activeChat?.title;
 
-  if(!activeChat) {
-    const response = await fetch(`${API_URL}/conversations`, {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({messages: userMessage})
-    });
+  // if(!activeChat) {
+    
+  //   const response = await fetch(`${API_URL}/chat`, {
+  //     method: 'POST',
+  //     headers: {'Content-Type': 'application/json'},
+  //     body: JSON.stringify({messages: userMessage})
+  //   });
 
-    const data = await response.json();
-    chatId = data.id;
-    chatTitle =  userMessage;
-  }
+  //   const data = await response.json();
+  //   chatId = data.id;
+  //   chatTitle =  userMessage;
+  // }
 
+console.log("active chat",activeChat)
 setIsLoading(true);
  const response2 = await fetch(`${API_URL}/chat`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       model: "llama3.2:3b",
-      message: [{ role: "user", content: userMessage }]
+      message: [{ role: "user", content: userMessage }],
+      title: chatTitle
     }),
   });
 
+
   const aiData = await response2.json();
+  console.log("ai data",aiData)
   
   setIsLoading(false)
-  setActiveChat((prev) => ({
+    setActiveChat((prev) => ({
     id: chatId,
-    title: chatTitle,
+    title: aiData?.title,
     messages: [
       // by default prev is undefined but since there is ? preve become an empty string
       ...(prev?.messages || []),
-      {id: chatId + '-u-' + Date.now(), sender: 'user', text: userMessage},
-      {id: chatId + '-a-' + Date.now(), sender: 'assistant', text: aiData.content}
+      {id: chatId + Date.now(), sender: 'user', text: userMessage},
+      {id: chatId + Date.now(), sender: 'assistant', text: aiData.content}
     ]
   }));
 
-  if(!activeChat) handleData();
-  setMessage("");
+  handleData();
+  if(!activeChat) 
+    setMessage("");
+    
+    };
+  //   handleData();
+  // setMessage("");
 
   
   //   const userMessage = message.trim();
@@ -135,10 +145,6 @@ setIsLoading(true);
   //   ]
 
 
-  handleData();
-  setMessage("");
-  
-};
   
 //   const response2 = await fetch(`${API_URL}/chat`, {
 //     method: "POST",

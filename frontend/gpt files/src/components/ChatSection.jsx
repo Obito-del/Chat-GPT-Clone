@@ -83,7 +83,7 @@ function ChatSection ({ handleSend, activeChat, messages, setMessage, chatData, 
                     <div className="chat-conversation-body">
                         {message.map((msg) => (
                             <div key={msg.id} className={`message-item ${msg.sender}`}>
-                                <strong>{msg.sender === "user" ? "You" : "ChatGPT"}</strong>
+                                {/* <strong>{msg.sender === "user" ? "You" : "ChatGPT"}</strong> */}
                                 <p>{msg.text}</p>
                             </div>
                         ))}
@@ -93,7 +93,7 @@ function ChatSection ({ handleSend, activeChat, messages, setMessage, chatData, 
                                 <span></span>
                                 <span></span>
                             </div>
-                        )}
+                        )}  
                     </div>
                 ) : (
                     <div className="AI-input">

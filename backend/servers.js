@@ -4,6 +4,7 @@ const express = require('express');
 const cors = require('cors');
 const http = require('http');   // ← this line was missing
 const { chatHistory, myDetailedConvo } = require('./data/ChatHistory.js');
+const { log } = require('console');
 //import { chatHistory, myDetailedConvo } from './data/ChatHistory.js'
 
 
@@ -17,31 +18,46 @@ app.get('/', (req, res) => {
     res.json({ message: 'ChatGPT clone is running in the background' });
 });
 
-app.get('/conversations', (req, res) => {
+app.get('/conversation', (req, res) => {
     res.json(chatHistory.items);
 });
 
-app.post('/conversations', (req, res) => {
 
-    // console.log(req.body)
-    const newPost = { 
-        id : Date.now().toString(),
-        title: req.body.messages,
-        text: req.body.messages
-    }
-    chatHistory.items.unshift(newPost)
-    // console.log(chatHistory.items)
-    res.json(newPost)
+// app.post('/conversations', (req, res) => {
 
-// const localChat = chatData.find((chat) => chat.id === id && chat.text);
-//     if(localChat) {
-//       setActiveChat(localChat)
-//       return;
+//     // console.log(req.body)
+//     const newPost = { 
+//         id : Date.now().toString(),
+//         title: req.body.messages,
+//         text: req.body.messages
 //     }
-})
+//     chatHistory.items.unshift(newPost)
+//     // console.log(chatHistory.items)
+//     res.json(newPost)
+
+// // const localChat = chatData.find((chat) => chat.id === id && chat.text);
+// //     if(localChat) {
+// //       setActiveChat(localChat)
+// //       return;
+// //     }
+// })
 
 app.post('/chat', async (req, res) => {
-    const {model, message} = req.body;
+    
+    const {model, message, title} = req.body;
+    if(!title) {
+     const newPost = { 
+        id : Date.now().toString(),
+        title: message[0].content,
+        text: req.body.message
+    }
+    chatHistory.items.unshift(newPost)
+    }
+   
+    // console.log(chatHistory.items)
+    // res.json(newPost)
+
+    
 
     const ollamaReq = http.request(
         {
@@ -58,7 +74,7 @@ app.post('/chat', async (req, res) => {
                 ollamaRes.on('data', (chunk) => (body += chunk));
                 ollamaRes.on('end', () => {
                     const data = JSON.parse(body);
-                    res.json(data.message);
+                    res.json({...data.message,title:message?.[0]?.content});
                 });
             }
         
@@ -68,8 +84,8 @@ app.post('/chat', async (req, res) => {
         console.error('Error fetching Ollama response:', err);
         res.status(500).json({ error: 'Failed to fetch Ollama response' });
     });
-
-    ollamaReq.write(JSON.stringify({ model, messages: message, stream: false }));
+    // stream flase make it appear in one box or chat
+    ollamaReq.write(JSON.stringify({ model, messages: message, stream: false}));
     ollamaReq.end();
 });
 
