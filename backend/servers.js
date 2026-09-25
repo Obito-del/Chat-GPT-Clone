@@ -3,10 +3,28 @@
 const express = require('express');
 const cors = require('cors');
 const http = require('http');   // ← this line was missing
+const fs = require('fs');
+const path = require('path');
+
 const { chatHistory, myDetailedConvo } = require('./data/ChatHistory.js');
 const { log } = require('console');
 //import { chatHistory, myDetailedConvo } from './data/ChatHistory.js'
 
+const conversationsFile = path.join(__dirname, 'data', 'conversations.json');
+
+let conversations = [];
+
+if (fs.existsSync(conversationsFile)) {
+    conversations = JSON.parse(fs.readFileSync(conversationsFile, 'utf8'));
+}
+
+// helper function
+function saveConversations() {
+    fs.writeFileSync(
+        conversationsFile,
+        JSON.stringify(conversations, null, 2)
+    );
+}
 
 const app = express();
 const PORT = 3000;
