@@ -23,7 +23,7 @@ function App() {
   const [activeChat, setActiveChat] = useState(null);
 
   const handleData = () => {
-    fetch(`${API_URL}/conversation`).then((res) => res.json())
+    fetch(`${API_URL}/conversations`).then((res) => res.json())
     .then((data) => setChatData(data))
     .catch((err) => console.error('Failed to fetch conversations:', err));
   }
@@ -56,18 +56,22 @@ const handleSend = async () => {
   let chatId = activeChat?.id;
   let chatTitle = activeChat?.title;
 
-  // if(!activeChat) {
+  if(!activeChat) {
     
-  //   const response = await fetch(`${API_URL}/chat`, {
-  //     method: 'POST',
-  //     headers: {'Content-Type': 'application/json'},
-  //     body: JSON.stringify({messages: userMessage})
-  //   });
+    const response = await fetch(`${API_URL}/conversations`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        title: userMessage
+      })
+    });
 
-  //   const data = await response.json();
-  //   chatId = data.id;
-  //   chatTitle =  userMessage;
-  // }
+    const data = await response.json();
+    chatId = data.id;
+    chatTitle = data.title;
+  }
 
 console.log("active chat",activeChat)
 setIsLoading(true);
@@ -96,7 +100,8 @@ const response2 = await fetch(`${API_URL}/chat`, {
   },
   body: JSON.stringify({
     model: "llama3.2:3b",
-    message: conversationMessages
+    message: conversationMessages,
+    chatId: chatId
   })
 });
 
@@ -117,7 +122,7 @@ const response2 = await fetch(`${API_URL}/chat`, {
   setIsLoading(false)
     setActiveChat((prev) => ({
     id: chatId,
-    title: aiData?.title,
+    title: chatTitle,
     messages: [
       // by default prev is undefined but since there is ? preve become an empty string
       ...(prev?.messages || []),
