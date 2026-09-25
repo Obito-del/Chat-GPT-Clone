@@ -44,8 +44,10 @@ app.get('/conversation', (req, res) => {
 
 app.post('/chat', async (req, res) => {
     
-    const {model, message, title} = req.body;
-    if(!title) {
+    console.log("BODY RECIVED:", req.body);
+    const {model, message, title} = req.body || {};
+    
+    if(!title && message?.length > 0) {
      const newPost = { 
         id : Date.now().toString(),
         title: message[0].content,

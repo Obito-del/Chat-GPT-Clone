@@ -71,15 +71,44 @@ const handleSend = async () => {
 
 console.log("active chat",activeChat)
 setIsLoading(true);
- const response2 = await fetch(`${API_URL}/chat`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      model: "llama3.2:3b",
-      message: [{ role: "user", content: userMessage }],
-      title: chatTitle
-    }),
-  });
+// this is the updated version of response2
+const previousMessages = activeChat?.messages || [];
+
+const conversationMessages = [
+  ...previousMessages.map((msg) => ({
+    role: msg.sender === "user" ? "user" : "assistant",
+    content: msg.text
+  })),
+  {
+    role: "user",
+    content: userMessage
+  }
+];
+console.log("SENDING TO BACKEND:", {
+  model: "llama3.2:3b",
+  message: conversationMessages
+});
+
+const response2 = await fetch(`${API_URL}/chat`, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    model: "llama3.2:3b",
+    message: conversationMessages
+  })
+});
+
+      //  const response2 = await fetch(`${API_URL}/chat`, {
+      //     method: "POST",
+      //     headers: { "Content-Type": "application/json" },
+      //     body: JSON.stringify({
+      //       model: "llama3.2:3b",
+      //       message: [{ role: "user", content: userMessage }],
+      //       title: chatTitle
+      //     }),
+      // });
 
 
   const aiData = await response2.json();
