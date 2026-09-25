@@ -7,7 +7,7 @@ const fs = require('fs');
 const path = require('path');
 
 const { chatHistory, myDetailedConvo } = require('./data/ChatHistory.js');
-const { log } = require('console');
+const { log, error } = require('console');
 //import { chatHistory, myDetailedConvo } from './data/ChatHistory.js'
 
 const conversationsFile = path.join(__dirname, 'data', 'conversations.json');
@@ -36,9 +36,25 @@ app.get('/', (req, res) => {
     res.json({ message: 'ChatGPT clone is running in the background' });
 });
 
-app.get('/conversation', (req, res) => {
-    res.json(chatHistory.items);
+app.get('/conversations', (req, res) => {
+    res.json(conversations);
 });
+
+app.post('/conversations', (req, res) => {
+    const { title } = req.body;
+
+    const newConversation = {
+        id: Date.now().toString(),
+        title: title || "New Chat",
+        message: []
+    };
+
+    conversations.unshift(newConversation);
+
+    saveConversations();
+
+    res.json(newConversation);
+})
 
 
 // app.post('/conversations', (req, res) => {
@@ -141,22 +157,39 @@ app.post('/chat', async (req, res) => {
 
 
 app.get('/conversations/:id', (req, res) => {
-    const { id } = req.params;
-    const detailed = myDetailedConvo.find(
-        (chat) => chat.conversation_id === id 
-    );
-    if (detailed) {
-        return res.json(detailed);
-    }
 
-    const basic = chatHistory.items.find((chat) => chat.id === id);
 
-    if(basic) {
-        return res.json(basic);
-    }
+// there is always a better version of a code here is it below
+
+const  { id } = req.params;
+
+const conversation = conversations.find(
+    (chat) => chat.id === id
+);
+
+if (conversation) {
+    return req.json(conversation);
+}
+
+res.status(404).json({
+    error: "COnversation not found"
+});
+    // const { id } = req.params;
+    // const detailed = myDetailedConvo.find(
+    //     (chat) => chat.conversation_id === id 
+    // );
+    // if (detailed) {
+    //     return res.json(detailed);
+    // }
+
+    // const basic = chatHistory.items.find((chat) => chat.id === id);
+
+    // if(basic) {
+    //     return res.json(basic);
+    // }
 
     
-    res.status(404).json({error: 'Conversation not found'})
+    // res.status(404).json({error: 'Conversation not found'})
 
 })
 
