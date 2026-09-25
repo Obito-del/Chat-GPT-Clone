@@ -36,15 +36,28 @@ function App() {
 
 
    const handleChatSelect = (id) => {
-    
-    //locally-typed chats live only in chatData, no in the backend
-    console.log('Selected chat ID:', message);
-// changed 
-    fetch(`${API_URL}/conversations/${id}`)
-    .then((res) => res.json())
-    .then((data) => setActiveChat(data))
-    .catch((err) => console.error('Failed to fetch conversations:', err))
-  }
+    if(!id) {
+      setActiveChat(null)
+      return;
+    }
+
+  console.log('Selected chat ID:', id);
+
+  fetch(`${API_URL}/conversations/${id}`)
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error(`Conversation request failed: ${res.status}`);
+      }
+      return res.json();
+    })
+    .then((data) => {
+      console.log("Selected conversation:", data);
+      setActiveChat(data);
+    })
+    .catch((err) => {
+      console.error('Failed to fetch conversation:', err);
+    });
+};
 
 
   
@@ -77,11 +90,13 @@ console.log("active chat",activeChat)
 setIsLoading(true);
 // this is the updated version of response2
 const previousMessages = activeChat?.messages || [];
+console.log("Privous MESSAGES:", previousMessages);
+
 
 const conversationMessages = [
   ...previousMessages.map((msg) => ({
-    role: msg.sender === "user" ? "user" : "assistant",
-    content: msg.text
+    role: msg.role,
+    content: msg.content
   })),
   {
     role: "user",
@@ -119,17 +134,15 @@ const response2 = await fetch(`${API_URL}/chat`, {
   const aiData = await response2.json();
   console.log("ai data",aiData)
   
-  setIsLoading(false)
-    setActiveChat((prev) => ({
-    id: chatId,
-    title: chatTitle,
-    messages: [
-      // by default prev is undefined but since there is ? preve become an empty string
-      ...(prev?.messages || []),
-      {id: chatId + Date.now(), sender: 'user', text: userMessage},
-      {id: chatId + Date.now(), sender: 'assistant', text: aiData.content}
-    ]
-  }));
+  setActiveChat((prev) => ({
+  id: chatId,
+  title: chatTitle,
+  messages: [
+    ...(prev?.messages || []),
+    { role: "user", content: userMessage },
+    { role: "assistant", content: aiData.content }
+  ]
+}));
 
   handleData();
   if(!activeChat) 

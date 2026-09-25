@@ -47,7 +47,7 @@ app.post('/conversations', (req, res) => {
     const newConversation = {
         id: Date.now().toString(),
         title: title || "New Chat",
-        message: []
+        messages: []
     };
 
     conversations.unshift(newConversation);
@@ -80,11 +80,15 @@ app.post('/conversations', (req, res) => {
 app.post('/chat', async (req, res) => {
     
     console.log("BODY RECIVED:", req.body);
-    const {model, message, title, cahtId } = req.body || {};
+   const { model, message, title, chatId } = req.body || {};
     
     const conversation = conversations.find(
-        (chat) => chat.id === cahtId
+        (chat) => chat.id === chatId
     );
+
+    console.log("LOOKING FOR CHAT:", chatId);
+    console.log("AVAILABLE CHATS:", conversations);
+    console.log("FOUND CHAT:", conversation);
 
     if(!conversation) {
         return res.status(404).json({
@@ -94,7 +98,7 @@ app.post('/chat', async (req, res) => {
 
     const userMessage = message[message.length - 1];
 
-    conversation.message.push({
+    conversation.messages.push({
         role: userMessage.role,
         content: userMessage.content
     });
@@ -142,7 +146,13 @@ app.post('/chat', async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch Ollama response' });
     });
     // stream flase make it appear in one box or chat
-    ollamaReq.write(JSON.stringify({ model, messages: message, stream: false}));
+   console.log("SENDING TO OLLAMA:", message);
+
+ollamaReq.write(JSON.stringify({
+    model,
+    messages: message,
+    stream: false
+}));
     ollamaReq.end();
 });
 
@@ -189,7 +199,7 @@ const conversation = conversations.find(
 );
 
 if (conversation) {
-    return req.json(conversation);
+    return res.json(conversation);
 }
 
 res.status(404).json({
