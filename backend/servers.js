@@ -8,6 +8,7 @@ const path = require('path');
 
 const { chatHistory, myDetailedConvo } = require('./data/ChatHistory.js');
 const { log, error } = require('console');
+const { resolve } = require('dns');
 //import { chatHistory, myDetailedConvo } from './data/ChatHistory.js'
 
 const conversationsFile = path.join(__dirname, 'data', 'conversations.json');
@@ -79,16 +80,25 @@ app.post('/conversations', (req, res) => {
 app.post('/chat', async (req, res) => {
     
     console.log("BODY RECIVED:", req.body);
-    const {model, message, title} = req.body || {};
+    const {model, message, title, cahtId } = req.body || {};
     
-    if(!title && message?.length > 0) {
-     const newPost = { 
-        id : Date.now().toString(),
-        title: message[0].content,
-        text: req.body.message
+    const conversation = conversations.find(
+        (chat) => chat.id === cahtId
+    );
+
+    if(!conversation) {
+        return res.status(404).json({
+            error: 'Conversation not found'
+        });
     }
-    chatHistory.items.unshift(newPost)
-    }
+
+    const userMessage = message[message.length - 1];
+
+    conversation.message.push({
+        role: userMessage.role,
+        content: userMessage.content
+    });
+    
    
     // console.log(chatHistory.items)
     // res.json(newPost)
@@ -110,7 +120,18 @@ app.post('/chat', async (req, res) => {
                 ollamaRes.on('data', (chunk) => (body += chunk));
                 ollamaRes.on('end', () => {
                     const data = JSON.parse(body);
-                    res.json({...data.message,title:message?.[0]?.content});
+                    
+                    const assistantMessage = data.message;
+
+                    conversation.messages.push({
+                        role: assistantMessage.role,
+                        content: assistantMessage.content
+                    });
+
+                    saveConversations();
+                    res.json({
+                        ...assistantMessage,
+                        title:message?.[0]?.content});
                 });
             }
         
