@@ -38,7 +38,16 @@ app.get('/', (req, res) => {
 });
 
 app.get('/conversations', (req, res) => {
-    res.json(conversations);
+    const oldConversations = chatHistory.items.map((chat) => ({
+        id: chat.id,
+        title: chat.title,
+        messages: []
+    }));
+
+    res.json([
+        ...conversations,
+        ...oldConversations
+    ]);
 });
 
 app.post('/conversations', (req, res) => {
@@ -78,19 +87,15 @@ app.post('/conversations', (req, res) => {
 // })
 
 app.post('/chat', async (req, res) => {
-    
-    console.log("BODY RECIVED:", req.body);
-   const { model, message, title, chatId } = req.body || {};
-    
+    console.log("BODY RECEIVED:", req.body);
+
+    const { model, message, chatId } = req.body || {};
+
     const conversation = conversations.find(
         (chat) => chat.id === chatId
     );
 
-    console.log("LOOKING FOR CHAT:", chatId);
-    console.log("AVAILABLE CHATS:", conversations);
-    console.log("FOUND CHAT:", conversation);
-
-    if(!conversation) {
+    if (!conversation) {
         return res.status(404).json({
             error: 'Conversation not found'
         });
@@ -98,16 +103,11 @@ app.post('/chat', async (req, res) => {
 
     const userMessage = message[message.length - 1];
 
+    // Save user's message
     conversation.messages.push({
         role: userMessage.role,
         content: userMessage.content
     });
-    
-   
-    // console.log(chatHistory.items)
-    // res.json(newPost)
-
-    
 
     const ollamaReq = http.request(
         {
@@ -119,40 +119,60 @@ app.post('/chat', async (req, res) => {
                 'Content-Type': 'application/json'
             }
         },
-            (ollamaRes) => {
-                let body = '';
-                ollamaRes.on('data', (chunk) => (body += chunk));
-                ollamaRes.on('end', () => {
+
+        (ollamaRes) => {
+            let body = '';
+
+            ollamaRes.on('data', (chunk) => {
+                body += chunk;
+            });
+
+            ollamaRes.on('end', () => {
+                try {
                     const data = JSON.parse(body);
-                    
+
                     const assistantMessage = data.message;
 
+                    // Save AI response
                     conversation.messages.push({
                         role: assistantMessage.role,
                         content: assistantMessage.content
                     });
 
                     saveConversations();
+
                     res.json({
                         ...assistantMessage,
-                        title:message?.[0]?.content});
-                });
-            }
-        
+                        title: message?.[0]?.content
+                    });
+
+                } catch (err) {
+                    console.error("Failed to process Ollama response:", err);
+
+                    res.status(500).json({
+                        error: "Failed to process Ollama response"
+                    });
+                }
+            });
+        }
     );
 
     ollamaReq.on('error', (err) => {
         console.error('Error fetching Ollama response:', err);
-        res.status(500).json({ error: 'Failed to fetch Ollama response' });
-    });
-    // stream flase make it appear in one box or chat
-   console.log("SENDING TO OLLAMA:", message);
 
-ollamaReq.write(JSON.stringify({
-    model,
-    messages: message,
-    stream: false
-}));
+        res.status(500).json({
+            error: 'Failed to fetch Ollama response'
+        });
+    });
+
+    ollamaReq.write(
+        JSON.stringify({
+            model,
+            messages: message,
+            stream: false
+        })
+    );
+
     ollamaReq.end();
 });
 
@@ -194,12 +214,17 @@ app.get('/conversations/:id', (req, res) => {
 
 const  { id } = req.params;
 
-const conversation = conversations.find(
-    (chat) => chat.id === id
+console.log("REQUESTED OLD CHAT ID:", id);
+console.log("DETAILED MATCH:", myDetailedConvo.find(
+    (chat) => chat.conversation_id === id
+));
+
+const detailed = myDetailedConvo.find(
+    (chat) => chat.conversation_id === id
 );
 
-if (conversation) {
-    return res.json(conversation);
+if (detailed) {
+    return res.json(detailed);
 }
 
 res.status(404).json({

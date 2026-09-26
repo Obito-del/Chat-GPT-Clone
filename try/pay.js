@@ -29,7 +29,7 @@ console.log(countVowels("Abenezer"));
 // the code below will find the second largest number in an arry
 
    
-    const scores = [10, 45, 2, 89, 23, 89];
+    const scores = [10, 45, 2, 89, 23, 99];
     function SecondLargest(numbers) {
     numbers.sort((a, b) => b - a);
     return numbers[1];
