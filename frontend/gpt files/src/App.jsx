@@ -65,6 +65,7 @@ const handleSend = async () => {
   const userMessage = message.trim();
   // if the user typed an empty string the if statment run which make it the code below not to run
   if(!userMessage) return; 
+  setMessage("")
 
   let chatId = activeChat?.id;
   let chatTitle = activeChat?.title;
@@ -131,18 +132,69 @@ const response2 = await fetch(`${API_URL}/chat`, {
       // });
 
 
-  const aiData = await response2.json();
-  console.log("ai data",aiData)
-  
-  setActiveChat((prev) => ({
+const reader = response2.body.getReader();
+const decoder = new TextDecoder();
+
+let assistantContent = "";
+
+setActiveChat((prev) => ({
   id: chatId,
   title: chatTitle,
   messages: [
     ...(prev?.messages || []),
     { role: "user", content: userMessage },
-    { role: "assistant", content: aiData.content }
+    { role: "assistant", content: "" }
   ]
 }));
+// new idea for AI
+
+while (true) {
+  const { value, done } = await reader.read();
+
+  if (done) break;
+
+  const chunk = decoder.decode(value, { stream: true });
+
+  const lines = chunk.split("\n");
+
+  for (const line of lines) {
+    if (!line.trim()) continue;
+
+    try {
+      const data = JSON.parse(line);
+
+      if (data.message?.content) {
+        assistantContent += data.message.content;
+
+        setActiveChat((prev) => ({
+          ...prev,
+          messages: prev.messages.map((msg, index) =>
+            index === prev.messages.length - 1
+              ? {
+                  ...msg,
+                  content: assistantContent
+                }
+              : msg
+          )
+        }));
+      }
+
+    } catch (err) {
+      console.error("Failed to parse stream chunk:", err);
+    }
+  }
+}
+
+setIsLoading(false);
+
+console.log("Final AI response:", assistantContent);
+
+handleData();
+
+if (!activeChat) {
+  setMessage("");
+}
+// ends here
 
   handleData();
   if(!activeChat) 

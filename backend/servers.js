@@ -109,6 +109,11 @@ app.post('/chat', async (req, res) => {
         content: userMessage.content
     });
 
+    // Tell the frontend we are sending a stream
+    res.setHeader('Content-Type', 'application/x-ndjson');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+
     const ollamaReq = http.request(
         {
             hostname: 'localhost',
@@ -121,38 +126,41 @@ app.post('/chat', async (req, res) => {
         },
 
         (ollamaRes) => {
-            let body = '';
+            let assistantContent = '';
 
             ollamaRes.on('data', (chunk) => {
-                body += chunk;
+                const lines = chunk.toString().split('\n');
+
+                for (const line of lines) {
+                    if (!line.trim()) continue;
+
+                    try {
+                        const data = JSON.parse(line);
+
+                        if (data.message?.content) {
+                            assistantContent += data.message.content;
+                        }
+
+                        // Send each Ollama chunk to the frontend
+                        res.write(line + '\n');
+
+                    } catch (err) {
+                        console.error("Failed to parse Ollama chunk:", err);
+                    }
+                }
             });
 
             ollamaRes.on('end', () => {
-                try {
-                    const data = JSON.parse(body);
 
-                    const assistantMessage = data.message;
+                // Save the complete AI response
+                conversation.messages.push({
+                    role: "assistant",
+                    content: assistantContent
+                });
 
-                    // Save AI response
-                    conversation.messages.push({
-                        role: assistantMessage.role,
-                        content: assistantMessage.content
-                    });
+                saveConversations();
 
-                    saveConversations();
-
-                    res.json({
-                        ...assistantMessage,
-                        title: message?.[0]?.content
-                    });
-
-                } catch (err) {
-                    console.error("Failed to process Ollama response:", err);
-
-                    res.status(500).json({
-                        error: "Failed to process Ollama response"
-                    });
-                }
+                res.end();
             });
         }
     );
@@ -160,16 +168,20 @@ app.post('/chat', async (req, res) => {
     ollamaReq.on('error', (err) => {
         console.error('Error fetching Ollama response:', err);
 
-        res.status(500).json({
-            error: 'Failed to fetch Ollama response'
-        });
+        if (!res.headersSent) {
+            res.status(500).json({
+                error: 'Failed to fetch Ollama response'
+            });
+        } else {
+            res.end();
+        }
     });
 
     ollamaReq.write(
         JSON.stringify({
             model,
             messages: message,
-            stream: false
+            stream: true
         })
     );
 
@@ -209,45 +221,66 @@ app.post('/chat', async (req, res) => {
 
 app.get('/conversations/:id', (req, res) => {
 
+    const { id } = req.params;
 
-// there is always a better version of a code here is it below
+    console.log("REQUESTED CHAT ID:", id);
 
-const  { id } = req.params;
+    // 1. Check newly created/saved conversations
+    const conversation = conversations.find(
+        (chat) => chat.id === id
+    );
 
-console.log("REQUESTED OLD CHAT ID:", id);
-console.log("DETAILED MATCH:", myDetailedConvo.find(
-    (chat) => chat.conversation_id === id
-));
+    if (conversation) {
+        console.log("FOUND NEW CONVERSATION:", conversation);
+        return res.json(conversation);
+    }
 
-const detailed = myDetailedConvo.find(
-    (chat) => chat.conversation_id === id
-);
+    // 2. Check old detailed conversations
+    const detailed = myDetailedConvo.find(
+        (chat) => chat.conversation_id === id
+    );
 
-if (detailed) {
-    return res.json(detailed);
-}
+    if (detailed) {
+        console.log("FOUND OLD DETAILED CONVERSATION:", detailed);
+        return res.json(detailed);
+    }
 
-res.status(404).json({
-    error: "COnversation not found"
+    // 3. Check old basic conversations
+    const basic = chatHistory.items.find(
+        (chat) => chat.id === id
+    );
+
+    if (basic) {
+        console.log("FOUND OLD BASIC CONVERSATION:", basic);
+        return res.json({
+            id: basic.id,
+            title: basic.title,
+            messages: []
+        });
+    }
+
+    console.log("CONVERSATION NOT FOUND:", id);
+
+    return res.status(404).json({
+        error: "Conversation not found"
+    });
+        // const { id } = req.params;
+        // const detailed = myDetailedConvo.find(
+        //     (chat) => chat.conversation_id === id 
+        // );
+        // if (detailed) {
+        //     return res.json(detailed);
+        // }
+        
+        // const basic = chatHistory.items.find((chat) => chat.id === id);
+        
+        // if(basic) {
+        //     return res.json(basic);
+        // }
+        
+        
+        // res.status(404).json({error: 'Conversation not found'})
 });
-    // const { id } = req.params;
-    // const detailed = myDetailedConvo.find(
-    //     (chat) => chat.conversation_id === id 
-    // );
-    // if (detailed) {
-    //     return res.json(detailed);
-    // }
-
-    // const basic = chatHistory.items.find((chat) => chat.id === id);
-
-    // if(basic) {
-    //     return res.json(basic);
-    // }
-
-    
-    // res.status(404).json({error: 'Conversation not found'})
-
-})
 
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`)

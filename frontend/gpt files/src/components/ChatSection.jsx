@@ -93,13 +93,13 @@ function ChatSection ({ handleSend, activeChat, messages, setMessage, chatData, 
                                 <p>{msg.text}</p>
                             </div>
                         ))}
-                        {isLoading && (
+                        {/* {isLoading && (
                             <div className="typing-indicator">
                                 <span></span>
                                 <span></span>
                                 <span></span>
                             </div>
-                        )}  
+                        )}   */}
                     </div>
                 ) : (
                     <div className="AI-input">
@@ -113,12 +113,23 @@ function ChatSection ({ handleSend, activeChat, messages, setMessage, chatData, 
                     <div className="div-2">
                     <div className="plus-input">
                         <PlusIcon size={23} className="img-1" weight="bold" color="white"/>
-                        <input type="text" placeholder="Ask anything..." value={messages} onChange={(e) => setMessage(e.target.value)}/>
+                       <input
+                            type="text"
+                            placeholder="Ask anything..."
+                            value={messages}
+                            onChange={(e) => setMessage(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                    e.preventDefault();
+                                    handleSend();
+                                }
+                            }}
+                        />
                     </div>
 
                     <div className="mic-sound">
                         <MicrophoneIcon size={20} className="img-2" color="white" />
-                        <div className="img-3" onClick={handleSend} onKeyDown={(e) => e.key === 'Enter' && handleSend()}>
+                        <div className="img-3" onClick={handleSend}>
                         <ArrowUpIcon size={16} weight="bold"/>
                         </div>
                     </div>
