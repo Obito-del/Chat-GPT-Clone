@@ -2,9 +2,10 @@
 
 const express = require('express');
 const cors = require('cors');
-const http = require('http');   // ← this line was missing
+// const http = require('http');   
 const fs = require('fs');
 const path = require('path');
+const ollama = require('ollama').default;
 
 const { chatHistory, myDetailedConvo } = require('./data/ChatHistory.js');
 const { log, error } = require('console');
@@ -114,78 +115,42 @@ app.post('/chat', async (req, res) => {
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
 
-    const ollamaReq = http.request(
-        {
-            hostname: 'localhost',
-            port: 11434,
-            path: '/api/chat',
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        },
-
-        (ollamaRes) => {
-            let assistantContent = '';
-
-            ollamaRes.on('data', (chunk) => {
-                const lines = chunk.toString().split('\n');
-
-                for (const line of lines) {
-                    if (!line.trim()) continue;
-
-                    try {
-                        const data = JSON.parse(line);
-
-                        if (data.message?.content) {
-                            assistantContent += data.message.content;
-                        }
-
-                        // Send each Ollama chunk to the frontend
-                        res.write(line + '\n');
-
-                    } catch (err) {
-                        console.error("Failed to parse Ollama chunk:", err);
-                    }
-                }
-            });
-
-            ollamaRes.on('end', () => {
-
-                // Save the complete AI response
-                conversation.messages.push({
-                    role: "assistant",
-                    content: assistantContent
-                });
-
-                saveConversations();
-
-                res.end();
-            });
-        }
-    );
-
-    ollamaReq.on('error', (err) => {
-        console.error('Error fetching Ollama response:', err);
-
-        if (!res.headersSent) {
-            res.status(500).json({
-                error: 'Failed to fetch Ollama response'
-            });
-        } else {
-            res.end();
-        }
-    });
-
-    ollamaReq.write(
-        JSON.stringify({
-            model,
+    try {
+        const stream = await ollama.chat({
+            model: model,
             messages: message,
             stream: true
-        })
-    );
+        });
+    let assistantContent = '';
 
-    ollamaReq.end();
+    for await (const part of stream) {
+        if (part.message?.content) {
+            assistantContent += part.message.content;
+        }
+
+        res.write(JSON.stringify(part) + '\n');
+    }
+
+    conversation.messages.push({
+        role: "assistant",
+        content: assistantContent
+    });
+
+    saveConversations();
+
+    res.end();
+
+} catch (err) {
+    console.error('Error fetching Ollama response:', err);
+
+    if (!res.headersSent) {
+        res.status(500).json({
+            error: 'Failed to fetch Ollama response'
+        });
+    } else {
+        res.end();
+    }
+}
 });
 
     // try {
