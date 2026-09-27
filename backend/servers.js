@@ -8,8 +8,7 @@ const path = require('path');
 const ollama = require('ollama').default;
 
 const { chatHistory, myDetailedConvo } = require('./data/ChatHistory.js');
-const { log, error } = require('console');
-const { resolve } = require('dns');
+
 //import { chatHistory, myDetailedConvo } from './data/ChatHistory.js'
 
 const conversationsFile = path.join(__dirname, 'data', 'conversations.json');
